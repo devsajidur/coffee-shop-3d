@@ -69,14 +69,14 @@ function Model({ setHovered, activeModel = 1 }: { setHovered: (v: boolean) => vo
     2: { 
       path: "/assets/3d-models/Machine-Expresso.glb", 
       title: "Espresso Machine", sub: "PREMIUM BREWING EXPERIENCE", 
-      scale: 0.55, hoverScale: 0.60, // সাইজ ব্যালেন্স করা হয়েছে যাতে vh এর ভেতরে থাকে
-      posY: -3.2, rotX: 0, hoverRotX: -0.1 // ঠিক কাপের পজিশনেই (posY: -3.2) রাখা হয়েছে
+      scale: 0.55, hoverScale: 0.60, 
+      posY: -3.2, rotX: 0, hoverRotX: -0.1 
     },
     3: { 
       path: "/assets/3d-models/French-press.glb", 
       title: "French Press", sub: "CLASSIC IMMERSION BREW", 
-      scale: 0.55, hoverScale: 0.60, // সাইজ ব্যালেন্স করা হয়েছে
-      posY: -3.2, rotX: 0, hoverRotX: -0.1 // ঠিক কাপের পজিশনেই রাখা হয়েছে
+      scale: 0.55, hoverScale: 0.60, 
+      posY: -3.2, rotX: 0, hoverRotX: -0.1 
     }
   }), []);
 

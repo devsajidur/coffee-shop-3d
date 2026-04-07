@@ -64,19 +64,19 @@ function Model({ setHovered, activeModel = 1 }: { setHovered: (v: boolean) => vo
       path: "/assets/3d-models/latte-with-heart-foam-art.glb", 
       title: "Classic Latte", sub: "WITH ARTISAN HEART FOAM ART", 
       scale: 0.55, hoverScale: 0.60, 
-      posY: -3.2, rotX: -0.4, hoverRotX: -0.2 
+      posY: -0.5, rotX: -0.4, hoverRotX: -0.2 
     },
     2: { 
       path: "/assets/3d-models/Machine-Expresso.glb", 
       title: "Espresso Machine", sub: "PREMIUM BREWING EXPERIENCE", 
-      scale: 0.55, hoverScale: 0.60, 
-      posY: -3.2, rotX: 0, hoverRotX: -0.1 
+      scale: 0.45, hoverScale: 0.50, 
+      posY: -0.5, rotX: 0, hoverRotX: -0.1 
     },
     3: { 
       path: "/assets/3d-models/French-press.glb", 
       title: "French Press", sub: "CLASSIC IMMERSION BREW", 
-      scale: 0.55, hoverScale: 0.60, 
-      posY: -3.2, rotX: 0, hoverRotX: -0.1 
+      scale: 0.45, hoverScale: 0.50, 
+      posY: -0.5, rotX: 0, hoverRotX: -0.1 
     }
   }), []);
 
@@ -121,7 +121,6 @@ function Model({ setHovered, activeModel = 1 }: { setHovered: (v: boolean) => vo
       </group>
 
       <Center 
-        top 
         position={[0, currentData.posY, 0]}
         onPointerOver={() => { setIsHovered(true); setHovered(true); document.body.style.cursor = 'pointer'; }}
         onPointerOut={() => { setIsHovered(false); setHovered(false); document.body.style.cursor = 'default'; }}
@@ -147,7 +146,7 @@ export default function CoffeeScene({ activeModel = 1 }: { activeModel?: number 
           
           {activeModel === 1 && <FallingBeans isPaused={isHovered} />}
           
-          <ContactShadows position={[0, -0.8, 0]} opacity={0.5} scale={12} blur={2.8} far={1} color="#110804" />
+          <ContactShadows position={[0, -2.2, 0]} opacity={0.5} scale={12} blur={2.8} far={1} color="#110804" />
         </Suspense>
       </Canvas>
     </div>

@@ -1,27 +1,27 @@
 "use client";
 import { useState } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
-  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
- 
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  
+  // Cart Context
+  const { cartItems, setIsCartOpen } = useCart();
+  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <>
-     
       <nav className="fixed top-0 left-0 w-full z-[100] px-6 lg:px-10 py-6 flex justify-between items-center bg-[#110804]/40 backdrop-blur-md border-b border-white/10">
         
-      
         <h2 className="text-xl lg:text-2xl font-black tracking-tighter uppercase leading-none cursor-pointer">
           <span className="text-white">BLACKSTONE</span> <br /> 
           <span className="text-[#c48c5a] text-xs lg:text-sm font-bold tracking-[0.2em] mt-1 inline-block">COFFEE</span>
         </h2>
         
-        
+        {/* Desktop Links */}
         <div className="hidden md:flex space-x-12 text-[10px] uppercase tracking-[0.5em] font-bold opacity-80 items-center">
           
-       
           <div className="relative group py-4">
             <button className="flex items-center gap-2 hover:text-[#c48c5a] transition-colors focus:outline-none">
               Menu
@@ -30,7 +30,6 @@ export default function Navbar() {
               </svg>
             </button>
 
-            
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <div className="bg-[#1a100c]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-6">
                 <div>
@@ -60,22 +59,52 @@ export default function Navbar() {
 
           <a href="#story" className="hover:text-[#c48c5a] transition-all py-4">Story</a>
           <a href="#visit" className="hover:text-[#c48c5a] transition-all py-4">Visit</a>
+          
+          {/* Desktop Cart Icon */}
+          <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[#c48c5a] transition-colors ml-4 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#c48c5a] text-[#110804] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+
           <a href="#book" className="ml-4 px-5 py-2 border border-[#c48c5a] text-[#c48c5a] rounded-full hover:bg-[#c48c5a] hover:text-[#110804] transition-all">
             Book Table
           </a>
         </div>
 
-        <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          className="flex md:hidden flex-col gap-1.5 focus:outline-none z-[160]"
-        >
-          <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "rotate-45 translate-y-2" : ""}`}></div>
-          <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "opacity-0" : ""}`}></div>
-          <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "-rotate-45 -translate-y-2" : ""}`}></div>
-        </button>
+        {/* Mobile Header Right (Cart + Hamburger) */}
+        <div className="flex md:hidden items-center gap-6 z-[160]">
+          
+          {/* Mobile Cart Icon */}
+          <button onClick={() => setIsCartOpen(true)} className="relative text-white hover:text-[#c48c5a] transition-colors focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#c48c5a] text-[#110804] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            className="flex flex-col gap-1.5 focus:outline-none"
+          >
+            <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "rotate-45 translate-y-2" : ""}`}></div>
+            <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "opacity-0" : ""}`}></div>
+            <div className={`w-6 h-0.5 bg-white transition-all ${isMenuOpen ? "-rotate-45 -translate-y-2" : ""}`}></div>
+          </button>
+        </div>
 
       </nav>
 
+      {/* Mobile Menu Sidebar */}
       <div 
         className={`fixed top-0 right-0 h-screen w-full md:hidden bg-[#110804]/95 backdrop-blur-xl z-[150] p-10 pt-36 border-l border-white/10 flex flex-col gap-10 text-[11px] uppercase tracking-[0.6em] font-bold opacity-80 transition-transform duration-300 ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
@@ -104,28 +133,21 @@ export default function Navbar() {
             
             {isMobileDropdownOpen && (
               <div className="bg-white/5 border border-white/5 rounded-2xl p-6 pl-8 flex flex-col gap-6 font-medium normal-case tracking-normal text-[13px] text-white/70">
-                
-                {/* Hot Brews */}
                 <div className="flex flex-col gap-3">
                   <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Hot Brews</h4>
                   <a href="#espresso" onClick={() => setIsMenuOpen(false)}>Classic Espresso</a>
                   <a href="#latte" onClick={() => setIsMenuOpen(false)}>Caramel Latte</a>
                   <a href="#cappuccino" onClick={() => setIsMenuOpen(false)}>Dark Cappuccino</a>
                 </div>
-
-                {/* Cold & Fresh */}
                 <div className="flex flex-col gap-3">
                   <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Cold & Fresh</h4>
                   <a href="#iced-latte" onClick={() => setIsMenuOpen(false)}>Iced Vanilla Latte</a>
                   <a href="#cold-brew" onClick={() => setIsMenuOpen(false)}>Nitro Cold Brew</a>
                 </div>
-
-             
                 <div className="flex flex-col gap-3">
                   <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Bites</h4>
                   <a href="#croissant" onClick={() => setIsMenuOpen(false)}>Butter Croissant</a>
                 </div>
-
               </div>
             )}
           </div>

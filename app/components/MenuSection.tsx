@@ -1,15 +1,16 @@
 "use client"; 
 import { useState } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function MenuSection() {
   const [addedItem, setAddedItem] = useState<string | null>(null);
+  const { addToCart } = useCart(); // Cart Context থেকে addToCart নিয়ে আসা হলো
 
   const menuItems = [
     // --- Hot Coffee ---
     { id: "espresso", name: "Classic Espresso", desc: "একদম পিউর এবং কড়া কফি শট।", price: "$3.00", type: "Hot Coffee", image: "/assets/coffee-items/Espresso.png" },
     { id: "macchiato", name: "Macchiato", desc: "এসপ্রেসোর ওপর সামান্য দুধের ফোম।", price: "$3.50", type: "Hot Coffee", image: "/assets/coffee-items/Macchiato.png" },
     { id: "cortado", name: "Cortado", desc: "সমান পরিমাণ এসপ্রেসো এবং গরম দুধ।", price: "$4.00", type: "Hot Coffee", image: "/assets/coffee-items/Cortado.png" },
-    
     { id: "caffe-latte", name: "Caffe Latte", desc: "বেশি পরিমাণ দুধ ও অল্প ফোমসহ এসপ্রেসো।", price: "$4.50", type: "Hot Coffee", image: "/assets/coffee-items/Caffe-Latte.png" },
     { id: "flat-white", name: "Flat White", desc: "সরু মাইক্রো-ফোমযুক্ত সিল্কি টেক্সচারের কফি।", price: "$4.50", type: "Hot Coffee", image: "/assets/coffee-items/Flat-White.png" },
     { id: "americano", name: "Americano", desc: "এসপ্রেসোর সাথে গরম পানির মিশ্রণ।", price: "$3.50", type: "Hot Coffee", image: "/assets/coffee-items/Americano.png" },
@@ -41,8 +42,19 @@ export default function MenuSection() {
     { id: "sandwiches", name: "Sandwiches", desc: "চিকেন অ্যাভোকাডো, স্মোকড টার্কি বা চিজ স্যান্ডউইচ।", price: "$7.00", type: "Food & Bakery", image: "/assets/coffee-items/Sandwiches.png" }
   ];
 
-  const handleAddToCart = (id: string) => {
-    setAddedItem(id);
+  // Add to Cart Logic
+  const handleAddToCart = (item: any) => {
+    const priceNumber = parseFloat(item.price.replace('$', ''));
+    
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: priceNumber,
+      image: item.image,
+      quantity: 1
+    });
+
+    setAddedItem(item.id);
     setTimeout(() => {
       setAddedItem(null);
     }, 2000);
@@ -80,11 +92,10 @@ export default function MenuSection() {
               <p className="text-[#c48c5a] text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5">{item.type}</p>
               <h4 className="text-lg font-bold text-white group-hover:text-[#c48c5a] transition-colors mb-2">{item.name}</h4>
               
-              {/* এখানেই বাংলা ফন্ট অ্যাড করা হয়েছে */}
               <p className="text-xs text-white/50 leading-relaxed mb-6 flex-grow font-['Hind_Siliguri'] tracking-wide">{item.desc}</p>
               
               <button 
-                onClick={() => handleAddToCart(item.id)}
+                onClick={() => handleAddToCart(item)}
                 className={`w-full py-3 rounded-xl text-[11px] uppercase tracking-[0.1em] font-bold transition-all duration-300 border ${
                   addedItem === item.id 
                     ? "bg-green-500/20 text-green-400 border-green-500/50" 

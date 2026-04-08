@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+// --- নতুন ইমপোর্টগুলো ---
+import { CartProvider } from "./context/CartContext";
+import CartSidebar from "./components/CartSidebar";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,13 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-  <body
-    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-    suppressHydrationWarning={true} 
-  >
-    {children}
-  </body>
-</html>
-    
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true} 
+      >
+        {/* CartProvider দিয়ে পুরো অ্যাপ র‍্যাপ করা হলো যাতে সব পেজ থেকে কার্ট অ্যাক্সেস করা যায় */}
+        <CartProvider>
+          {children}
+          {/* CartSidebar যুক্ত করা হলো */}
+          <CartSidebar />
+        </CartProvider>
+      </body>
+    </html>
   );
 }

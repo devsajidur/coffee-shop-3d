@@ -6,7 +6,6 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   
-  // Cart Context
   const { cartItems, setIsCartOpen } = useCart();
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -30,29 +29,65 @@ export default function Navbar() {
               </svg>
             </button>
 
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-              <div className="bg-[#1a100c]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-6">
-                <div>
-                  <h3 className="text-[#c48c5a] tracking-[0.3em] mb-3 border-b border-white/10 pb-2">Hot Brews</h3>
-                  <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
-                    <li><a href="#espresso" className="hover:text-white hover:translate-x-1 inline-block transition-all">Classic Espresso</a></li>
-                    <li><a href="#latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Caramel Latte</a></li>
-                    <li><a href="#cappuccino" className="hover:text-white hover:translate-x-1 inline-block transition-all">Dark Cappuccino</a></li>
-                  </ul>
+            {/* Desktop MEGA MENU */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[700px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div className="bg-[#1a100c]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] grid grid-cols-3 gap-10">
+                
+                {/* Column 1 */}
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Hot Coffee</h3>
+                    <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
+                      <li><a href="#espresso" className="hover:text-white hover:translate-x-1 inline-block transition-all">Classic Espresso</a></li>
+                      <li><a href="#cappuccino" className="hover:text-white hover:translate-x-1 inline-block transition-all">Cappuccino</a></li>
+                      <li><a href="#caffe-latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Caffe Latte</a></li>
+                      <li><a href="#americano" className="hover:text-white hover:translate-x-1 inline-block transition-all">Americano</a></li>
+                      <li><a href="#mocha" className="hover:text-white hover:translate-x-1 inline-block transition-all">Mocha</a></li>
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-[#c48c5a] tracking-[0.3em] mb-3 border-b border-white/10 pb-2">Cold & Fresh</h3>
-                  <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
-                    <li><a href="#iced-latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Iced Vanilla Latte</a></li>
-                    <li><a href="#cold-brew" className="hover:text-white hover:translate-x-1 inline-block transition-all">Nitro Cold Brew</a></li>
-                  </ul>
+
+                {/* Column 2 */}
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Cold Coffee</h3>
+                    <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
+                      <li><a href="#iced-americano" className="hover:text-white hover:translate-x-1 inline-block transition-all">Iced Americano</a></li>
+                      <li><a href="#cold-brew" className="hover:text-white hover:translate-x-1 inline-block transition-all">Cold Brew</a></li>
+                      <li><a href="#nitro-cold-brew" className="hover:text-white hover:translate-x-1 inline-block transition-all">Nitro Cold Brew</a></li>
+                      <li><a href="#frappuccino" className="hover:text-white hover:translate-x-1 inline-block transition-all">Frappuccino</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Signatures</h3>
+                    <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
+                      <li><a href="#spanish-latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Spanish Latte</a></li>
+                      <li><a href="#pistachio-latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Pistachio Latte</a></li>
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-[#c48c5a] tracking-[0.3em] mb-3 border-b border-white/10 pb-2">Bites</h3>
-                  <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
-                    <li><a href="#croissant" className="hover:text-white hover:translate-x-1 inline-block transition-all">Butter Croissant</a></li>
-                  </ul>
+
+                {/* Column 3 */}
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Non-Coffee</h3>
+                    <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
+                      <li><a href="#hot-chocolate" className="hover:text-white hover:translate-x-1 inline-block transition-all">Hot Chocolate</a></li>
+                      <li><a href="#matcha-latte" className="hover:text-white hover:translate-x-1 inline-block transition-all">Matcha Latte</a></li>
+                      <li><a href="#smoothies" className="hover:text-white hover:translate-x-1 inline-block transition-all">Smoothies & Juices</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Food & Bakery</h3>
+                    <ul className="flex flex-col gap-3 normal-case tracking-normal font-medium text-[13px] text-white/70">
+                      <li><a href="#croissants" className="hover:text-white hover:translate-x-1 inline-block transition-all">Croissants</a></li>
+                      <li><a href="#pastries" className="hover:text-white hover:translate-x-1 inline-block transition-all">Pastries</a></li>
+                      <li><a href="#cakes" className="hover:text-white hover:translate-x-1 inline-block transition-all">Cakes</a></li>
+                      <li><a href="#sandwiches" className="hover:text-white hover:translate-x-1 inline-block transition-all">Sandwiches</a></li>
+                    </ul>
+                  </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -60,7 +95,6 @@ export default function Navbar() {
           <a href="#story" className="hover:text-[#c48c5a] transition-all py-4">Story</a>
           <a href="#visit" className="hover:text-[#c48c5a] transition-all py-4">Visit</a>
           
-          {/* Desktop Cart Icon */}
           <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[#c48c5a] transition-colors ml-4 focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -77,10 +111,8 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile Header Right (Cart + Hamburger) */}
+        {/* Mobile Header Right */}
         <div className="flex md:hidden items-center gap-6 z-[160]">
-          
-          {/* Mobile Cart Icon */}
           <button onClick={() => setIsCartOpen(true)} className="relative text-white hover:text-[#c48c5a] transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -106,7 +138,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Sidebar */}
       <div 
-        className={`fixed top-0 right-0 h-screen w-full md:hidden bg-[#110804]/95 backdrop-blur-xl z-[150] p-10 pt-36 border-l border-white/10 flex flex-col gap-10 text-[11px] uppercase tracking-[0.6em] font-bold opacity-80 transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-screen w-full md:hidden bg-[#110804]/95 backdrop-blur-xl z-[150] p-10 pt-36 border-l border-white/10 flex flex-col gap-10 text-[11px] uppercase tracking-[0.6em] font-bold opacity-80 transition-transform duration-300 overflow-y-auto ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -118,7 +150,7 @@ export default function Navbar() {
           &times;
         </button>
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8 pb-10">
           
           <div className="flex flex-col gap-5">
             <button 
@@ -134,19 +166,27 @@ export default function Navbar() {
             {isMobileDropdownOpen && (
               <div className="bg-white/5 border border-white/5 rounded-2xl p-6 pl-8 flex flex-col gap-6 font-medium normal-case tracking-normal text-[13px] text-white/70">
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Hot Brews</h4>
+                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Hot Coffee</h4>
                   <a href="#espresso" onClick={() => setIsMenuOpen(false)}>Classic Espresso</a>
-                  <a href="#latte" onClick={() => setIsMenuOpen(false)}>Caramel Latte</a>
-                  <a href="#cappuccino" onClick={() => setIsMenuOpen(false)}>Dark Cappuccino</a>
+                  <a href="#cappuccino" onClick={() => setIsMenuOpen(false)}>Cappuccino</a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Cold & Fresh</h4>
-                  <a href="#iced-latte" onClick={() => setIsMenuOpen(false)}>Iced Vanilla Latte</a>
-                  <a href="#cold-brew" onClick={() => setIsMenuOpen(false)}>Nitro Cold Brew</a>
+                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Cold Coffee</h4>
+                  <a href="#iced-americano" onClick={() => setIsMenuOpen(false)}>Iced Americano</a>
+                  <a href="#cold-brew" onClick={() => setIsMenuOpen(false)}>Cold Brew</a>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Bites</h4>
-                  <a href="#croissant" onClick={() => setIsMenuOpen(false)}>Butter Croissant</a>
+                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Signatures</h4>
+                  <a href="#spanish-latte" onClick={() => setIsMenuOpen(false)}>Spanish Latte</a>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Non-Coffee</h4>
+                  <a href="#hot-chocolate" onClick={() => setIsMenuOpen(false)}>Hot Chocolate</a>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <h4 className="text-[#c48c5a] uppercase font-bold text-[10px] tracking-[0.2em]">Food & Bakery</h4>
+                  <a href="#croissants" onClick={() => setIsMenuOpen(false)}>Croissants</a>
+                  <a href="#sandwiches" onClick={() => setIsMenuOpen(false)}>Sandwiches</a>
                 </div>
               </div>
             )}

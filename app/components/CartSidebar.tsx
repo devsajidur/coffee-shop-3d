@@ -1,12 +1,22 @@
 "use client";
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
 
 export default function CartSidebar() {
-  const { cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { 
+    cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, 
+    subTotal, discount, finalTotal, activeCoupon, couponMessage, applyCoupon, removeCoupon 
+  } = useCart();
+  
+  const [couponInput, setCouponInput] = useState("");
+
+  const handleApplyCoupon = () => {
+    if (couponInput) applyCoupon(couponInput);
+    setCouponInput("");
+  };
 
   return (
     <>
-      {/* Background Overlay */}
       {isCartOpen && (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] transition-opacity"
@@ -14,18 +24,17 @@ export default function CartSidebar() {
         ></div>
       )}
 
-      {/* Sidebar Panel */}
       <div 
         className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#1a100c]/95 backdrop-blur-xl border-l border-white/10 z-[200] p-6 shadow-2xl transition-transform duration-500 ease-in-out flex flex-col ${
           isCartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+        <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
           <h2 className="text-[#c48c5a] text-lg font-bold tracking-[0.2em] uppercase">Your Order</h2>
           <button onClick={() => setIsCartOpen(false)} className="text-white/60 hover:text-white text-3xl transition-colors">&times;</button>
         </div>
 
-        <div className="flex-grow overflow-y-auto pr-2 space-y-6 scrollbar-thin scrollbar-thumb-[#c48c5a]/50">
+        <div className="flex-grow overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-[#c48c5a]/50">
           {cartItems.length === 0 ? (
             <div className="text-center text-white/50 mt-20 font-['Hind_Siliguri']">আপনার কার্টে কোনো আইটেম নেই।</div>
           ) : (
@@ -50,16 +59,64 @@ export default function CartSidebar() {
           )}
         </div>
 
-        <div className="border-t border-white/10 pt-6 mt-4">
-          <div className="flex justify-between text-white mb-6">
-            <span className="font-bold tracking-widest uppercase text-sm">Total</span>
-            <span className="font-black text-xl text-[#c48c5a]">${cartTotal.toFixed(2)}</span>
+        {/* --- Coupon & Total Section --- */}
+        <div className="border-t border-white/10 pt-5 mt-4">
+          
+          {/* Coupon Input Area */}
+          {cartItems.length > 0 && (
+            <div className="mb-5">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  placeholder="Promo Code (e.g. COFFEE20)" 
+                  className="flex-grow bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#c48c5a]"
+                />
+                <button 
+                  onClick={handleApplyCoupon}
+                  className="bg-white/10 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/20 transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+
+              {/* Coupon Messages */}
+              {activeCoupon === "INVALID" && (
+                <p className="text-red-400 text-xs mt-2">Invalid or expired coupon code.</p>
+              )}
+              {activeCoupon && activeCoupon !== "INVALID" && (
+                <div className="flex justify-between items-center mt-2 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg">
+                  <span className="text-green-400 text-xs font-bold">{couponMessage}</span>
+                  <button onClick={removeCoupon} className="text-white/50 hover:text-white text-xs">&times; Remove</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pricing Breakdown */}
+          <div className="space-y-2 mb-4 text-sm">
+            <div className="flex justify-between text-white/70">
+              <span>Subtotal</span>
+              <span>${subTotal.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-green-400 font-medium">
+                <span>Discount</span>
+                <span>-${discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-white font-bold text-lg pt-2 border-t border-white/5 mt-2">
+              <span className="tracking-widest uppercase text-sm self-center">Total</span>
+              <span className="text-2xl text-[#c48c5a]">${finalTotal.toFixed(2)}</span>
+            </div>
           </div>
+
           <button 
             disabled={cartItems.length === 0}
             className="w-full bg-[#c48c5a] text-[#110804] py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#e8c39e] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Checkout
+            Proceed to Checkout
           </button>
         </div>
       </div>

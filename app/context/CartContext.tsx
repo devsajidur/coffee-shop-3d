@@ -16,7 +16,13 @@ type CartContextType = {
   updateQuantity: (id: string, amount: number) => void;
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
-  cartTotal: number;
+  subTotal: number;
+  discount: number;
+  finalTotal: number;
+  activeCoupon: string | null;
+  couponMessage: string;
+  applyCoupon: (code: string) => void;
+  removeCoupon: () => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -24,6 +30,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [activeCoupon, setActiveCoupon] = useState<string | null>(null);
 
   const addToCart = (newItem: CartItem) => {
     setCartItems((prev) => {
@@ -35,7 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...newItem, quantity: 1 }];
     });
-    setIsCartOpen(true); // অ্যাড করলেই স্লাইডবার ওপেন হবে
+    setIsCartOpen(true);
   };
 
   const removeFromCart = (id: string) => {
@@ -50,10 +57,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  // --- Discount & Total Logic ---
+  const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  
+  let discount = 0;
+  let couponMessage = "";
+
+  if (activeCoupon === "COFFEE20") {
+    if (subTotal >= 30) {
+      discount = subTotal * 0.20; // 20% discount
+      couponMessage = "20% Discount Applied!";
+    } else {
+      couponMessage = `Add $${(30 - subTotal).toFixed(2)} more to use this code.`;
+    }
+  } else if (activeCoupon === "FLAT5") {
+    if (subTotal >= 20) {
+      discount = 5.00; // Flat $5 discount
+      couponMessage = "$5 Flat Discount Applied!";
+    } else {
+      couponMessage = `Minimum order $20 required for this code.`;
+    }
+  }
+
+  const finalTotal = subTotal - discount;
+
+  const applyCoupon = (code: string) => {
+    const uppercaseCode = code.toUpperCase().trim();
+    if (uppercaseCode === "COFFEE20" || uppercaseCode === "FLAT5") {
+      setActiveCoupon(uppercaseCode);
+    } else {
+      setActiveCoupon("INVALID");
+    }
+  };
+
+  const removeCoupon = () => {
+    setActiveCoupon(null);
+  };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, isCartOpen, setIsCartOpen, cartTotal }}>
+    <CartContext.Provider value={{ 
+      cartItems, addToCart, removeFromCart, updateQuantity, 
+      isCartOpen, setIsCartOpen, 
+      subTotal, discount, finalTotal, activeCoupon, couponMessage, applyCoupon, removeCoupon 
+    }}>
       {children}
     </CartContext.Provider>
   );

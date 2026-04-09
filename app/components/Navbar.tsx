@@ -6,7 +6,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   
-  const { cartItems, setIsCartOpen } = useCart();
+  const { cartItems, setIsCartOpen, setIsAuthOpen, isLoggedIn, setIsLoggedIn } = useCart(); // <--- লগইনের স্টেটগুলো আনা হলো
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -29,11 +29,8 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Desktop MEGA MENU */}
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[700px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <div className="bg-[#1a100c]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] grid grid-cols-3 gap-10">
-                
-                {/* Column 1 */}
                 <div className="flex flex-col gap-6">
                   <div>
                     <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Hot Coffee</h3>
@@ -46,8 +43,6 @@ export default function Navbar() {
                     </ul>
                   </div>
                 </div>
-
-                {/* Column 2 */}
                 <div className="flex flex-col gap-6">
                   <div>
                     <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Cold Coffee</h3>
@@ -66,8 +61,6 @@ export default function Navbar() {
                     </ul>
                   </div>
                 </div>
-
-                {/* Column 3 */}
                 <div className="flex flex-col gap-6">
                   <div>
                     <h3 className="text-[#c48c5a] tracking-[0.2em] mb-4 border-b border-white/10 pb-2">Non-Coffee</h3>
@@ -87,13 +80,19 @@ export default function Navbar() {
                     </ul>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
 
           <a href="#story" className="hover:text-[#c48c5a] transition-all py-4">Story</a>
           <a href="#visit" className="hover:text-[#c48c5a] transition-all py-4">Visit</a>
+
+          {/* Login/Logout Button */}
+          {isLoggedIn ? (
+            <button onClick={() => setIsLoggedIn(false)} className="hover:text-[#c48c5a] transition-all py-4">Logout</button>
+          ) : (
+            <button onClick={() => setIsAuthOpen(true)} className="hover:text-[#c48c5a] transition-all py-4">Login</button>
+          )}
           
           <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[#c48c5a] transition-colors ml-4 focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -106,13 +105,18 @@ export default function Navbar() {
             )}
           </button>
 
-          <a href="#book" className="ml-4 px-5 py-2 border border-[#c48c5a] text-[#c48c5a] rounded-full hover:bg-[#c48c5a] hover:text-[#110804] transition-all">
-            Book Table
-          </a>
         </div>
 
         {/* Mobile Header Right */}
         <div className="flex md:hidden items-center gap-6 z-[160]">
+          
+          {/* Mobile Login Icon */}
+          <button onClick={() => isLoggedIn ? setIsLoggedIn(false) : setIsAuthOpen(true)} className="text-white hover:text-[#c48c5a] transition-colors focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+
           <button onClick={() => setIsCartOpen(true)} className="relative text-white hover:text-[#c48c5a] transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -142,7 +146,6 @@ export default function Navbar() {
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-      
         <button 
           onClick={() => { setIsMenuOpen(false); setIsMobileDropdownOpen(false); }} 
           className="absolute top-8 right-8 text-white text-3xl opacity-60 hover:opacity-100"
@@ -151,7 +154,6 @@ export default function Navbar() {
         </button>
 
         <div className="flex flex-col gap-8 pb-10">
-          
           <div className="flex flex-col gap-5">
             <button 
               onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
@@ -194,11 +196,13 @@ export default function Navbar() {
 
           <a href="#story" onClick={() => setIsMenuOpen(false)}>Story</a>
           <a href="#visit" onClick={() => setIsMenuOpen(false)}>Visit</a>
+          
+          {isLoggedIn ? (
+            <button onClick={() => { setIsLoggedIn(false); setIsMenuOpen(false); }} className="text-left text-white hover:text-[#c48c5a] transition-all">Logout</button>
+          ) : (
+            <button onClick={() => { setIsAuthOpen(true); setIsMenuOpen(false); }} className="text-left text-white hover:text-[#c48c5a] transition-all">Login / Sign Up</button>
+          )}
         </div>
-        
-        <a href="#book" onClick={() => setIsMenuOpen(false)} className="px-6 py-3 border border-[#c48c5a] text-[#c48c5a] rounded-full text-center hover:bg-[#c48c5a] hover:text-[#110804] transition-all">
-          Book Table
-        </a>
       </div>
     </>
   );

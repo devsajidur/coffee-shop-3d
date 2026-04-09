@@ -5,7 +5,8 @@ import { useCart } from "../context/CartContext";
 export default function CartSidebar() {
   const { 
     cartItems, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, 
-    subTotal, discount, finalTotal, activeCoupon, couponMessage, applyCoupon, removeCoupon 
+    subTotal, discount, finalTotal, activeCoupon, couponMessage, applyCoupon, removeCoupon,
+    setIsCheckoutOpen, isLoggedIn, setIsAuthOpen // <--- এগুলো এখন সঠিকভাবে ইমপোর্ট করা হলো
   } = useCart();
   
   const [couponInput, setCouponInput] = useState("");
@@ -59,10 +60,8 @@ export default function CartSidebar() {
           )}
         </div>
 
-        {/* --- Coupon & Total Section --- */}
         <div className="border-t border-white/10 pt-5 mt-4">
           
-          {/* Coupon Input Area */}
           {cartItems.length > 0 && (
             <div className="mb-5">
               <div className="flex gap-2">
@@ -81,7 +80,6 @@ export default function CartSidebar() {
                 </button>
               </div>
 
-              {/* Coupon Messages */}
               {activeCoupon === "INVALID" && (
                 <p className="text-red-400 text-xs mt-2">Invalid or expired coupon code.</p>
               )}
@@ -94,7 +92,6 @@ export default function CartSidebar() {
             </div>
           )}
 
-          {/* Pricing Breakdown */}
           <div className="space-y-2 mb-4 text-sm">
             <div className="flex justify-between text-white/70">
               <span>Subtotal</span>
@@ -114,6 +111,14 @@ export default function CartSidebar() {
 
           <button 
             disabled={cartItems.length === 0}
+            onClick={() => {
+              setIsCartOpen(false);
+              if (isLoggedIn) {
+                setIsCheckoutOpen(true);
+              } else {
+                setIsAuthOpen(true);
+              }
+            }}
             className="w-full bg-[#c48c5a] text-[#110804] py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#e8c39e] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Proceed to Checkout

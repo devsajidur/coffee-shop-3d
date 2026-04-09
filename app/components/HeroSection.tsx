@@ -23,9 +23,9 @@ export default function HeroSection() {
         </p>
         
         <div className="flex flex-wrap gap-3 md:gap-4 mb-8 md:mb-10">
-          <button className="bg-[#c48c5a] text-[#110804] text-[10px] md:text-[11px] uppercase tracking-[0.1em] font-bold py-3 px-6 md:py-4 md:px-8 rounded-full hover:bg-[#e8c39e] transition-all shadow-xl">
+          <a href="#menu" className="bg-[#c48c5a] text-[#110804] text-[10px] md:text-[11px] uppercase tracking-[0.1em] font-bold py-3 px-6 md:py-4 md:px-8 rounded-full hover:bg-[#e8c39e] transition-all shadow-xl">
             Order Coffee
-          </button>
+          </a>
           <a href="#menu" className="bg-transparent border border-[#c48c5a] text-[#c48c5a] text-[10px] md:text-[11px] uppercase tracking-[0.1em] font-bold py-3 px-6 md:py-4 md:px-8 rounded-full hover:bg-white/5 transition-all">
             Explore Flavors
           </a>

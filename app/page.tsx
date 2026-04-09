@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import MenuSection from "./components/MenuSection"; 
 import StoryVisitSection from "./components/StoryVisitSection";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <HeroSection />
       <MenuSection />
       <StoryVisitSection />
+      <Footer />
 
       {/* Decorative Bottom Elements */}
       <div className="fixed bottom-10 right-10 flex flex-col items-end space-y-3 opacity-40 z-50 pointer-events-none">

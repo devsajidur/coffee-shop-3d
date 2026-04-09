@@ -6,7 +6,8 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   
-  const { cartItems, setIsCartOpen, setIsAuthOpen, isLoggedIn, setIsLoggedIn } = useCart(); // <--- লগইনের স্টেটগুলো আনা হলো
+  // setIsBookTableOpen এখানে ইমপোর্ট করা হলো
+  const { cartItems, setIsCartOpen, setIsAuthOpen, isLoggedIn, setIsLoggedIn, setIsBookTableOpen } = useCart(); 
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -19,7 +20,7 @@ export default function Navbar() {
         </h2>
         
         {/* Desktop Links */}
-        <div className="hidden md:flex space-x-12 text-[10px] uppercase tracking-[0.5em] font-bold opacity-80 items-center">
+        <div className="hidden md:flex space-x-10 lg:space-x-12 text-[10px] uppercase tracking-[0.5em] font-bold opacity-80 items-center">
           
           <div className="relative group py-4">
             <button className="flex items-center gap-2 hover:text-[#c48c5a] transition-colors focus:outline-none">
@@ -94,7 +95,7 @@ export default function Navbar() {
             <button onClick={() => setIsAuthOpen(true)} className="hover:text-[#c48c5a] transition-all py-4">Login</button>
           )}
           
-          <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[#c48c5a] transition-colors ml-4 focus:outline-none">
+          <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[#c48c5a] transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -105,12 +106,16 @@ export default function Navbar() {
             )}
           </button>
 
+          {/* Book Table Button */}
+          <button onClick={() => setIsBookTableOpen(true)} className="ml-4 px-5 py-2 border border-[#c48c5a] text-[#c48c5a] rounded-full hover:bg-[#c48c5a] hover:text-[#110804] transition-all focus:outline-none">
+            Book Table
+          </button>
+
         </div>
 
         {/* Mobile Header Right */}
         <div className="flex md:hidden items-center gap-6 z-[160]">
           
-          {/* Mobile Login Icon */}
           <button onClick={() => isLoggedIn ? setIsLoggedIn(false) : setIsAuthOpen(true)} className="text-white hover:text-[#c48c5a] transition-colors focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -202,6 +207,11 @@ export default function Navbar() {
           ) : (
             <button onClick={() => { setIsAuthOpen(true); setIsMenuOpen(false); }} className="text-left text-white hover:text-[#c48c5a] transition-all">Login / Sign Up</button>
           )}
+
+          {/* Mobile Book Table Button */}
+          <button onClick={() => { setIsBookTableOpen(true); setIsMenuOpen(false); }} className="px-6 py-3 border border-[#c48c5a] text-[#c48c5a] rounded-full text-center hover:bg-[#c48c5a] hover:text-[#110804] transition-all focus:outline-none mt-4">
+            Book Table
+          </button>
         </div>
       </div>
     </>

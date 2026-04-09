@@ -1,35 +1,21 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-};
+type CartItem = { id: string; name: string; price: number; image: string; quantity: number; };
 
 type CartContextType = {
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, amount: number) => void;
-  isCartOpen: boolean;
-  setIsCartOpen: (isOpen: boolean) => void;
-  isCheckoutOpen: boolean;
-  setIsCheckoutOpen: (isOpen: boolean) => void;
-  isAuthOpen: boolean;
-  setIsAuthOpen: (isOpen: boolean) => void;
-  isLoggedIn: boolean;
-  setIsLoggedIn: (isLogged: boolean) => void;
-  subTotal: number;
-  discount: number;
-  finalTotal: number;
-  activeCoupon: string | null;
-  couponMessage: string;
-  applyCoupon: (code: string) => void;
-  removeCoupon: () => void;
-  clearCart: () => void;
+  isCartOpen: boolean; setIsCartOpen: (isOpen: boolean) => void;
+  isCheckoutOpen: boolean; setIsCheckoutOpen: (isOpen: boolean) => void;
+  isAuthOpen: boolean; setIsAuthOpen: (isOpen: boolean) => void;
+  isBookTableOpen: boolean; setIsBookTableOpen: (isOpen: boolean) => void; // <--- নতুন
+  isLoggedIn: boolean; setIsLoggedIn: (isLogged: boolean) => void;
+  subTotal: number; discount: number; finalTotal: number;
+  activeCoupon: string | null; couponMessage: string;
+  applyCoupon: (code: string) => void; removeCoupon: () => void; clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -39,25 +25,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isBookTableOpen, setIsBookTableOpen] = useState(false); // <--- নতুন
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeCoupon, setActiveCoupon] = useState<string | null>(null);
 
   const addToCart = (newItem: CartItem) => {
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.id === newItem.id);
-      if (existingItem) {
-        return prev.map((item) => item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item);
-      }
+      if (existingItem) return prev.map((item) => item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item);
       return [...prev, { ...newItem, quantity: 1 }];
     });
-    // setIsCartOpen(true); <--- এই লাইনটি মুছে দেওয়া হয়েছে
   };
 
   const removeFromCart = (id: string) => setCartItems((prev) => prev.filter((item) => item.id !== id));
-  const updateQuantity = (id: string, amount: number) => {
-    setCartItems((prev) => prev.map((item) => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + amount) } : item));
-  };
-
+  const updateQuantity = (id: string, amount: number) => setCartItems((prev) => prev.map((item) => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + amount) } : item));
   const clearCart = () => { setCartItems([]); setActiveCoupon(null); };
 
   const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -84,7 +65,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider value={{ 
       cartItems, addToCart, removeFromCart, updateQuantity, 
       isCartOpen, setIsCartOpen, isCheckoutOpen, setIsCheckoutOpen,
-      isAuthOpen, setIsAuthOpen, isLoggedIn, setIsLoggedIn,
+      isAuthOpen, setIsAuthOpen, isBookTableOpen, setIsBookTableOpen, isLoggedIn, setIsLoggedIn,
       subTotal, discount, finalTotal, activeCoupon, couponMessage, applyCoupon, removeCoupon, clearCart 
     }}>
       {children}

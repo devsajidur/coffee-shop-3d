@@ -5,7 +5,8 @@ import "./globals.css";
 import { CartProvider } from "./context/CartContext";
 import CartSidebar from "./components/CartSidebar";
 import CheckoutModal from "./components/CheckoutModal";
-import AuthModal from "./components/AuthModal"; // <--- AuthModal ইমপোর্ট করা হলো
+import AuthModal from "./components/AuthModal";
+import BookTableModal from "./components/BookTableModal"; // <--- BookTableModal ইমপোর্ট করা হলো
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,8 @@ export default function RootLayout({
           {children}
           <CartSidebar />
           <CheckoutModal />
-          <AuthModal /> {/* <--- AuthModal এখানে রেন্ডার করা হলো */}
+          <AuthModal />
+          <BookTableModal /> {/* <--- BookTableModal এখানে রেন্ডার করা হলো */}
         </CartProvider>
       </body>
     </html>

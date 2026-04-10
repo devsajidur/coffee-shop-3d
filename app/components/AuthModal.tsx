@@ -8,17 +8,24 @@ export default function AuthModal() {
 
   if (!isAuthOpen) return null;
 
+  const handleClose = () => {
+    setIsAuthOpen(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // ডেমো লগইন/সাইনআপ লজিক
     setIsLoggedIn(true);
     setIsAuthOpen(false);
-    setIsCheckoutOpen(true); // লগইন হওয়ার সাথে সাথে চেকআউট মোডাল ওপেন হবে
+    setIsCheckoutOpen(true); 
   };
 
   return (
-    <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsAuthOpen(false)}></div>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+      {/* ব্যাকড্রপ */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+        onClick={handleClose}
+      ></div>
 
       <div className="relative w-full max-w-md bg-[#1a100c]/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 p-8 md:p-10">
         
@@ -26,7 +33,7 @@ export default function AuthModal() {
           <h2 className="text-[#c48c5a] text-xl font-bold tracking-[0.2em] uppercase">
             {isLoginView ? "Welcome Back" : "Create Account"}
           </h2>
-          <button onClick={() => setIsAuthOpen(false)} className="text-white/60 hover:text-white text-3xl transition-colors">&times;</button>
+          <button onClick={handleClose} className="text-white/60 hover:text-white text-3xl transition-colors">&times;</button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

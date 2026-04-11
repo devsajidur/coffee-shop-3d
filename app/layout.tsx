@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { CartProvider } from "./context/CartContext";
+import { GeoLockProvider } from "./context/GeoLockContext";
 import CartSidebar from "./components/CartSidebar";
 import CheckoutModal from "./components/CheckoutModal";
 import AuthModal from "./components/AuthModal";
-import BookTableModal from "./components/BookTableModal"; 
+import BookTableModal from "./components/BookTableModal";
+import UrlTableSync from "./components/UrlTableSync";
+import DistanceAlertModal from "./components/DistanceAlertModal";
+import ShopClosedBanner from "./components/ShopClosedBanner";
+import ShopClosedModal from "./components/ShopClosedModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +41,19 @@ export default function RootLayout({
         suppressHydrationWarning={true} 
       >
         <CartProvider>
-          {children}
-          <CartSidebar />
-          <CheckoutModal />
-          <AuthModal />
-          <BookTableModal /> 
+          <GeoLockProvider>
+            <Suspense fallback={null}>
+              <UrlTableSync />
+            </Suspense>
+            <ShopClosedBanner />
+            <DistanceAlertModal />
+            <ShopClosedModal />
+            {children}
+            <CartSidebar />
+            <CheckoutModal />
+            <AuthModal />
+            <BookTableModal />
+          </GeoLockProvider>
         </CartProvider>
       </body>
     </html>

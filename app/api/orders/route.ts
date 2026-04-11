@@ -21,10 +21,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Your cart is empty!" }, { status: 400 });
     }
 
+    const isDelivery = Boolean(body.isDelivery);
     const tableNumber = String(body.tableNumber ?? "").trim();
-    if (!tableNumber) {
+    const address = String(body.address ?? "").trim();
+
+    if (!isDelivery && !tableNumber) {
       return NextResponse.json(
-        { error: "Table ID is required (scan the table QR or open the menu link)." },
+        {
+          error:
+            "Table ID is required for dine-in (scan the table QR or open the menu link).",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (isDelivery && address.length < 5) {
+      return NextResponse.json(
+        { error: "Please enter a full delivery address." },
         { status: 400 }
       );
     }
@@ -39,8 +52,8 @@ export async function POST(request: Request) {
       customerName: body.customerName,
       email: body.email || "guest@blackstone.com",
       phone: body.phone,
-      address: body.address,
-      tableNumber,
+      address: isDelivery ? address : address || "Dine-in",
+      tableNumber: isDelivery ? "" : tableNumber,
       adults,
       children,
       peopleCount: adults + children,

@@ -22,6 +22,7 @@ export type CartItem = {
 type PublicSettings = {
   autoPuzzleDiscountEnabled: boolean;
   puzzleWinnerPercent: number;
+  deliveryRadiusKm: number;
 };
 
 type CartContextType = {
@@ -61,6 +62,7 @@ type CartContextType = {
   setDistanceAlertOpen: (v: boolean) => void;
   shopClosedModalOpen: boolean;
   setShopClosedModalOpen: (v: boolean) => void;
+  deliveryRadiusKm: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -113,12 +115,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setPublicSettings({
           autoPuzzleDiscountEnabled: Boolean(d.autoPuzzleDiscountEnabled),
           puzzleWinnerPercent: Number(d.puzzleWinnerPercent) || 10,
+          deliveryRadiusKm: Number(d.deliveryRadiusKm) > 0 ? Number(d.deliveryRadiusKm) : 3,
         });
       } catch {
         if (!alive) return;
         setPublicSettings({
           autoPuzzleDiscountEnabled: false,
           puzzleWinnerPercent: 10,
+          deliveryRadiusKm: 3,
         });
       }
     })();
@@ -291,6 +295,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setDistanceAlertOpen,
     shopClosedModalOpen,
     setShopClosedModalOpen,
+    deliveryRadiusKm: publicSettings?.deliveryRadiusKm ?? 3,
   };
 
   return (

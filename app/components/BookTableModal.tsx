@@ -3,12 +3,16 @@ import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { isShopOpenAt } from "@/lib/shopHours";
 
+const CLOSED_MSG =
+  "Table booking is only available during operating hours (Sat–Thu 8:00 AM–11:00 PM, Fri 3:00 PM–11:00 PM Asia/Dhaka).";
+
 export default function BookTableModal() {
   const { isBookTableOpen, setIsBookTableOpen, shopCountdownMs, shopNextBoundaryLabel } =
     useCart();
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState("");
+  const [contactErr, setContactErr] = useState("");
 
   useEffect(() => {
     if (isBookTableOpen) document.body.style.overflow = "hidden";
@@ -21,16 +25,24 @@ export default function BookTableModal() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setContactErr("");
     if (!isShopOpenAt()) {
-      alert("দোকান বন্ধ — বুকিং নেই।");
+      alert(CLOSED_MSG);
+      return;
+    }
+    const formData = new FormData(e.currentTarget);
+    const phone = String(formData.get("phone") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    if (phone.length < 6 && email.length < 5) {
+      setContactErr("Please enter a valid phone number or email.");
       return;
     }
     setLoading(true);
-    const formData = new FormData(e.currentTarget);
 
     const bookingData = {
       customerName: formData.get("name"),
-      phone: formData.get("phone"),
+      phone,
+      email,
       date: formData.get("date"),
       time: formData.get("time"),
       guests: "Table booking",
@@ -60,7 +72,10 @@ export default function BookTableModal() {
 
   const handleClose = () => {
     setIsBookTableOpen(false);
-    setTimeout(() => setStep("form"), 300);
+    setTimeout(() => {
+      setStep("form");
+      setContactErr("");
+    }, 300);
   };
 
   function fmt(ms: number) {
@@ -82,9 +97,10 @@ export default function BookTableModal() {
       <div className="relative w-full max-w-xl bg-[#1a100c] p-8 rounded-3xl border border-white/10 font-['Hind_Siliguri']">
         {!open && (
           <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-center text-sm text-amber-100">
-            <p className="font-bold">দোকান বন্ধ — বুকিং বন্ধ</p>
+            <p className="font-bold">Booking closed</p>
+            <p className="mt-2 text-xs leading-relaxed text-amber-100/90">{CLOSED_MSG}</p>
             <p className="mt-2 text-xs text-amber-100/80">
-              পরবর্তী:{" "}
+              Next change:{" "}
               <span className="font-[family-name:var(--font-geist-sans)] tabular-nums">
                 {shopNextBoundaryLabel}
               </span>
@@ -99,6 +115,9 @@ export default function BookTableModal() {
             <h2 className="text-[#c48c5a] text-xl font-bold uppercase tracking-widest">
               Book A Table
             </h2>
+            <p className="text-[10px] text-white/40">
+              Phone or email is required so we can confirm your reservation.
+            </p>
             <input
               name="name"
               required
@@ -108,11 +127,22 @@ export default function BookTableModal() {
             />
             <input
               name="phone"
-              required
-              placeholder="Phone"
+              placeholder="Phone (optional if email provided)"
               disabled={!open}
               className="w-full bg-white/5 p-3 rounded-xl text-white outline-none disabled:opacity-40 font-[family-name:var(--font-geist-sans)]"
             />
+            <input
+              name="email"
+              type="email"
+              placeholder="Email (optional if phone provided)"
+              disabled={!open}
+              className="w-full bg-white/5 p-3 rounded-xl text-white outline-none disabled:opacity-40 font-[family-name:var(--font-geist-sans)]"
+            />
+            {contactErr && (
+              <p className="text-xs text-red-300 font-[family-name:var(--font-geist-sans)]">
+                {contactErr}
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <input
                 name="date"
@@ -136,7 +166,7 @@ export default function BookTableModal() {
               disabled={loading || !open}
               className="w-full bg-[#c48c5a] py-4 rounded-xl font-bold uppercase text-xs text-[#110804] disabled:opacity-50"
             >
-              {loading ? "Processing..." : open ? "Confirm Booking" : "Shop Closed"}
+              {loading ? "Processing..." : open ? "Confirm Booking" : "Booking unavailable"}
             </button>
           </form>
         ) : (

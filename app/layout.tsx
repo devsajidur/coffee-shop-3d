@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { AuthProvider } from "./providers";
 import { CartProvider } from "./context/CartContext";
 import { GeoLockProvider } from "./context/GeoLockContext";
 import CartSidebar from "./components/CartSidebar";
@@ -40,6 +41,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true} 
       >
+        <AuthProvider>
         <CartProvider>
           <GeoLockProvider>
             <Suspense fallback={null}>
@@ -55,6 +57,7 @@ export default function RootLayout({
             <BookTableModal />
           </GeoLockProvider>
         </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -24,7 +24,8 @@ export default function CartSidebar() {
     tableId,
     isShopOpen,
   } = useCart();
-  const { canOrder, isVerifying, ensureTracking } = useGeoLock();
+  const { canCheckoutGeo, isVerifying, ensureTracking, serviceMode, geoBlockMessage } =
+    useGeoLock();
 
   useEffect(() => {
     if (isCartOpen) ensureTracking();
@@ -40,16 +41,28 @@ export default function CartSidebar() {
       await applyCoupon(couponInput);
     } finally {
       setCouponBusy(false);
-      setCouponInput("");
     }
   };
 
+  const isDineIn = serviceMode === "dine_in_qr";
   const checkoutBlocked =
     cartItems.length === 0 ||
-    !canOrder ||
-    isVerifying ||
     !isShopOpen ||
-    !tableId;
+    isVerifying ||
+    !canCheckoutGeo ||
+    (isDineIn && !tableId);
+
+  const checkoutLabel = !isShopOpen
+    ? "Shop Closed"
+    : isVerifying
+      ? "Checking location…"
+      : !canCheckoutGeo
+        ? isDineIn
+          ? "Visit the cafe to order"
+          : "Outside delivery zone"
+        : isDineIn && !tableId
+          ? "Table link required"
+          : "Proceed to Checkout";
 
   return (
     <>
@@ -77,7 +90,7 @@ export default function CartSidebar() {
           </button>
         </div>
 
-        {tableId && (
+        {isDineIn && tableId && (
           <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/45 font-['Hind_Siliguri']">
             টেবিল{" "}
             <span className="font-[family-name:var(--font-geist-sans)] text-[#c48c5a]">
@@ -85,10 +98,21 @@ export default function CartSidebar() {
             </span>
           </p>
         )}
-        {!tableId && (
+        {isDineIn && !tableId && (
           <p className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[10px] text-amber-100/90 font-['Hind_Siliguri']">
             টেবিল লিংক খুলুন:{" "}
             <span className="font-[family-name:var(--font-geist-sans)]">/menu?table=N</span>
+          </p>
+        )}
+        {!isDineIn && (
+          <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/45 font-['Hind_Siliguri']">
+            হোম ডেলিভারি মোড
+          </p>
+        )}
+
+        {!canCheckoutGeo && !isVerifying && cartItems.length > 0 && (
+          <p className="mb-3 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-100/95">
+            {geoBlockMessage}
           </p>
         )}
 
@@ -227,12 +251,12 @@ export default function CartSidebar() {
             title={
               !isShopOpen
                 ? "দোকান বন্ধ"
-                : !tableId
+                : isDineIn && !tableId
                   ? "টেবিল লিংক প্রয়োজন"
                   : isVerifying
                     ? "লোকেশন চেক…"
-                    : !canOrder
-                      ? "কাফের কাছে আসুন"
+                    : !canCheckoutGeo
+                      ? geoBlockMessage
                       : undefined
             }
             onClick={() => {
@@ -246,15 +270,7 @@ export default function CartSidebar() {
             }}
             className="w-full bg-[#c48c5a] text-[#110804] py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#e8c39e] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {!isShopOpen
-              ? "Shop Closed"
-              : !tableId
-                ? "Table link required"
-                : isVerifying
-                  ? "Checking location…"
-                  : !canOrder
-                    ? "Order at the shop"
-                    : "Proceed to Checkout"}
+            {checkoutLabel}
           </button>
         </div>
       </div>

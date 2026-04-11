@@ -9,16 +9,33 @@ export async function POST(request: Request) {
 
     if (!isShopOpenAt()) {
       return NextResponse.json(
-        { error: "Shop is closed. Table booking is not available right now." },
+        {
+          error:
+            "Table booking is only available during operating hours (Sat–Thu 8:00 AM–11:00 PM, Fri 3:00 PM–11:00 PM Asia/Dhaka).",
+        },
         { status: 403 }
       );
     }
 
     const body = await request.json();
+    const phone = String(body.phone ?? "").trim();
+    const email = String(body.email ?? "").trim();
+    if (phone.length < 6 && email.length < 5) {
+      return NextResponse.json(
+        { error: "Please provide a valid phone number or email for verification." },
+        { status: 400 }
+      );
+    }
+
     const bookingId = `RSV-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newBooking = await Booking.create({
-      ...body,
+      customerName: body.customerName,
+      phone,
+      email,
+      date: body.date,
+      time: body.time,
+      guests: body.guests ?? "Table booking",
       bookingId,
     });
 

@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { useGeoLock } from "../context/GeoLockContext";
-import { ORDER_UNLOCK_RADIUS_METERS } from "@/lib/blackstoneGeo";
+import {
+  DINE_IN_QR_RADIUS_METERS,
+  deliveryRadiusMeters,
+} from "@/lib/blackstoneGeo";
 
 type MenuProduct = {
   _id: string;
@@ -22,8 +25,17 @@ export default function MenuSection() {
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const { addToCart, setDistanceAlertOpen, setShopClosedModalOpen, isShopOpen } =
     useCart();
-  const { canOrder, isVerifying, trackingEngaged, distanceMeters, status } =
-    useGeoLock();
+  const {
+    canAddToCart,
+    canCheckoutGeo,
+    isVerifying,
+    trackingEngaged,
+    distanceMeters,
+    status,
+    serviceMode,
+    deliveryRadiusKm,
+    geoBlockMessage,
+  } = useGeoLock();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,7 +61,7 @@ export default function MenuSection() {
       setShopClosedModalOpen(true);
       return;
     }
-    if (!canOrder) {
+    if (!canAddToCart) {
       setDistanceAlertOpen(true);
       return;
     }
@@ -86,6 +98,7 @@ export default function MenuSection() {
   }
 
   const locating = trackingEngaged && isVerifying;
+  const addDisabled = locating || !canAddToCart;
 
   return (
     <section
@@ -116,12 +129,25 @@ export default function MenuSection() {
             </motion.p>
           )}
         </AnimatePresence>
-        {!locating && trackingEngaged && status === "locked" && distanceMeters != null && (
-          <p className="mt-3 text-[11px] text-white/35 font-[family-name:var(--font-geist-sans)] tabular-nums">
-            ~{Math.round(distanceMeters)}m দূরে — কার্টে যোগ করতে{" "}
-            {ORDER_UNLOCK_RADIUS_METERS}m এর মধ্যে আসুন
-          </p>
-        )}
+        {!locating &&
+          trackingEngaged &&
+          serviceMode === "delivery" &&
+          !canAddToCart &&
+          distanceMeters != null && (
+            <p className="mt-3 max-w-lg mx-auto text-[11px] text-amber-100/90 leading-relaxed">
+              {geoBlockMessage}
+            </p>
+          )}
+        {!locating &&
+          trackingEngaged &&
+          serviceMode === "dine_in_qr" &&
+          !canCheckoutGeo &&
+          distanceMeters != null && (
+            <p className="mt-3 text-[11px] text-white/35 font-[family-name:var(--font-geist-sans)] tabular-nums">
+              ~{Math.round(distanceMeters)}m — checkout requires within{" "}
+              {DINE_IN_QR_RADIUS_METERS}m of the cafe when using a table link.
+            </p>
+          )}
       </div>
 
       {menuItems.length > 0 ? (
@@ -164,15 +190,18 @@ export default function MenuSection() {
 
                 <button
                   type="button"
+                  disabled={addDisabled || !isShopOpen}
                   onClick={() => handleAddToCart(item)}
                   title={
                     !isShopOpen
                       ? "দোকান বন্ধ"
-                      : !canOrder
-                        ? "দূরত্বের বাইরে — ক্লিক করে বিস্তারিত দেখুন"
+                      : addDisabled
+                        ? serviceMode === "delivery"
+                          ? geoBlockMessage
+                          : "লোকেশন চেক…"
                         : undefined
                   }
-                  className={`w-full py-3 rounded-xl text-[11px] uppercase tracking-[0.1em] font-bold transition-all duration-300 border ${
+                  className={`w-full py-3 rounded-xl text-[11px] uppercase tracking-[0.1em] font-bold transition-all duration-300 border disabled:opacity-45 disabled:cursor-not-allowed ${
                     addedItem === item.id
                       ? "bg-green-500/20 text-green-400 border-green-500/50"
                       : "bg-transparent text-[#c48c5a] border-[#c48c5a]/30 hover:bg-[#c48c5a] hover:text-[#110804] hover:border-[#c48c5a]"
@@ -181,9 +210,16 @@ export default function MenuSection() {
                   {addedItem === item.id
                     ? "Added ✓"
                     : locating
-                      ? "লোকেশন চেক হচ্ছে…"
-                      : "Add to Order"}
+                      ? "Checking location…"
+                      : !canAddToCart && serviceMode === "delivery"
+                        ? "Outside delivery zone"
+                        : "Add to Order"}
                 </button>
+                {serviceMode === "delivery" && !addDisabled && (
+                  <p className="mt-2 text-[9px] text-white/30 text-center font-[family-name:var(--font-geist-sans)]">
+                    Delivery within ~{Math.round(deliveryRadiusMeters(deliveryRadiusKm) / 100) / 10}km
+                  </p>
+                )}
               </div>
             </div>
           ))}

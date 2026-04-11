@@ -20,7 +20,8 @@ export default function CheckoutModal() {
     setChildrenCount,
     isShopOpen,
   } = useCart();
-  const { canOrder, ensureTracking } = useGeoLock();
+  const { canCheckoutGeo, ensureTracking, serviceMode } = useGeoLock();
+  const isDineIn = serviceMode === "dine_in_qr";
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -35,16 +36,24 @@ export default function CheckoutModal() {
   }, [isCheckoutOpen, ensureTracking]);
 
   useEffect(() => {
-    if (isCheckoutOpen && (!isShopOpen || !tableId || !canOrder)) {
+    if (isCheckoutOpen && (!isShopOpen || !canCheckoutGeo || (isDineIn && !tableId))) {
       setIsCheckoutOpen(false);
     }
-  }, [isCheckoutOpen, isShopOpen, tableId, canOrder, setIsCheckoutOpen]);
+  }, [
+    isCheckoutOpen,
+    isShopOpen,
+    canCheckoutGeo,
+    tableId,
+    isDineIn,
+    setIsCheckoutOpen,
+  ]);
 
   if (!isCheckoutOpen) return null;
 
   const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!canOrder || !isShopOpen || !tableId) return;
+    if (!canCheckoutGeo || !isShopOpen) return;
+    if (isDineIn && !tableId) return;
     if (adultCount < 1) {
       alert("অন্তত ১ জন প্রাপ্তবয়স্ক প্রয়োজন।");
       return;
@@ -57,7 +66,8 @@ export default function CheckoutModal() {
       email: formData.get("email") || "guest@blackstone.com",
       phone: formData.get("phone"),
       address: formData.get("address"),
-      tableNumber: tableId,
+      tableNumber: tableId ?? "",
+      isDelivery: !isDineIn,
       adults: adultCount,
       children: childrenCount,
       items: cartItems,
@@ -109,10 +119,10 @@ export default function CheckoutModal() {
             </h2>
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
               <p className="text-[10px] uppercase tracking-widest text-white/40">
-                Table ID
+                {isDineIn ? "Table" : "Delivery"}
               </p>
               <p className="mt-1 font-[family-name:var(--font-geist-sans)] text-lg font-black tabular-nums text-[#c48c5a]">
-                #{tableId}
+                {isDineIn ? `#${tableId}` : "Home delivery"}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -148,6 +158,12 @@ export default function CheckoutModal() {
               className="w-full bg-white/5 p-3 rounded-xl text-white outline-none"
             />
             <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="w-full bg-white/5 p-3 rounded-xl text-white outline-none font-[family-name:var(--font-geist-sans)]"
+            />
+            <input
               name="phone"
               required
               placeholder="Phone"
@@ -156,7 +172,7 @@ export default function CheckoutModal() {
             <textarea
               name="address"
               required
-              placeholder="Address / notes"
+              placeholder={isDineIn ? "Address / notes" : "Full delivery address"}
               className="w-full bg-white/5 p-3 rounded-xl text-white outline-none rows={2}"
               rows={2}
             ></textarea>
@@ -168,7 +184,7 @@ export default function CheckoutModal() {
             </div>
             <button
               type="submit"
-              disabled={loading || !canOrder}
+              disabled={loading || !canCheckoutGeo}
               className="w-full bg-[#c48c5a] py-4 rounded-xl font-bold uppercase text-xs text-[#110804] disabled:opacity-50"
             >
               {loading ? "Processing..." : "Place Order"}

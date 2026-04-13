@@ -23,7 +23,11 @@ type PublicSettings = {
   autoPuzzleDiscountEnabled: boolean;
   puzzleWinnerPercent: number;
   deliveryRadiusKm: number;
+  isSystemClosed: boolean;
+  closureReason: string;
+  closedUntil: string | null;
 };
+
 
 type CartContextType = {
   cartItems: CartItem[];
@@ -63,7 +67,12 @@ type CartContextType = {
   shopClosedModalOpen: boolean;
   setShopClosedModalOpen: (v: boolean) => void;
   deliveryRadiusKm: number;
+  /** Emergency / scheduled closure state from MongoDB */
+  isSystemClosed: boolean;
+  closureReason: string;
+  closedUntil: string | null;
 };
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -116,6 +125,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           autoPuzzleDiscountEnabled: Boolean(d.autoPuzzleDiscountEnabled),
           puzzleWinnerPercent: Number(d.puzzleWinnerPercent) || 10,
           deliveryRadiusKm: Number(d.deliveryRadiusKm) > 0 ? Number(d.deliveryRadiusKm) : 3,
+          isSystemClosed: Boolean(d.isSystemClosed),
+          closureReason: String(d.closureReason ?? ""),
+          closedUntil: d.closedUntil ? String(d.closedUntil) : null,
         });
       } catch {
         if (!alive) return;
@@ -123,7 +135,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
           autoPuzzleDiscountEnabled: false,
           puzzleWinnerPercent: 10,
           deliveryRadiusKm: 3,
+          isSystemClosed: false,
+          closureReason: "",
+          closedUntil: null,
         });
+
       }
     })();
     return () => {
@@ -296,7 +312,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     shopClosedModalOpen,
     setShopClosedModalOpen,
     deliveryRadiusKm: publicSettings?.deliveryRadiusKm ?? 3,
+    isSystemClosed: publicSettings?.isSystemClosed ?? false,
+    closureReason: publicSettings?.closureReason ?? "",
+    closedUntil: publicSettings?.closedUntil ?? null,
   };
+
 
   return (
     <CartContext.Provider value={value}>{children}</CartContext.Provider>

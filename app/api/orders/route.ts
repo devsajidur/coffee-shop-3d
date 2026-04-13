@@ -1,21 +1,82 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Order from "@/models/Order";
+import StoreSettings from "@/models/StoreSettings";
 import { isShopOpenAt } from "@/lib/shopHours";
+
+const TZ = "Asia/Dhaka";
+
+/**
+ * Checks whether the shop is currently under an emergency or scheduled closure.
+ * Returns a closure info object if closed, or null if operating normally.
+ */
+async function getShopClosureStatus(): Promise<{
+  closed: boolean;
+  reason: string;
+  until: Date | null;
+} | null> {
+  const doc = (await StoreSettings.findOne({
+    singletonKey: "blackstone",
+  }).lean()) as {
+    isEmergencyClosed?: boolean;
+    closedFrom?: Date | null;
+    closedUntil?: Date | null;
+    closureReason?: string;
+  } | null;
+
+  if (!doc) return null;
+
+  const now = new Date();
+  const reason = doc.closureReason || "Temporarily closed";
+
+  if (doc.isEmergencyClosed) {
+    return { closed: true, reason, until: doc.closedUntil ?? null };
+  }
+
+  if (doc.closedFrom && doc.closedUntil) {
+    const from = new Date(doc.closedFrom);
+    const until = new Date(doc.closedUntil);
+    if (now >= from && now <= until) {
+      return { closed: true, reason, until };
+    }
+  }
+
+  return null;
+}
 
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
 
-    const body = await request.json();
-    console.log("Received Order Data:", body);
+    // ── 1. Emergency / scheduled closure check ──────────────────────────────
+    const closure = await getShopClosureStatus();
+    if (closure?.closed) {
+      const untilStr = closure.until
+        ? closure.until.toLocaleString("en-GB", {
+            timeZone: TZ,
+            dateStyle: "medium",
+            timeStyle: "short",
+          })
+        : "further notice";
+      return NextResponse.json(
+        {
+          error: `We are temporarily closed until ${untilStr}. Reason: ${closure.reason}`,
+          emergencyClosed: true,
+        },
+        { status: 503 }
+      );
+    }
 
+    // ── 2. Regular shop-hours check ─────────────────────────────────────────
     if (!isShopOpenAt()) {
       return NextResponse.json(
         { error: "Shop is closed. Ordering is not available right now." },
         { status: 403 }
       );
     }
+
+    const body = await request.json();
+    console.log("Received Order Data:", body);
 
     if (!body.items || body.items.length === 0) {
       return NextResponse.json({ error: "Your cart is empty!" }, { status: 400 });
